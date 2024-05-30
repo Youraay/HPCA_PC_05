@@ -48,7 +48,7 @@ int main() {
   // Use void gather (const float *array, const uint_v &indexes)
 
   // begin your code here:
-
+  tmp.gather(input, index);
 
   // end of your code
   
@@ -62,11 +62,13 @@ int main() {
   else   std::cout << "WRONG." << std::endl;
 
   // gather with masking
-  float_v tmp2;
+  float_v tmp2(Vc::Zero);
   //TODO gather data with indices "index" from the array "input" into float_v tmp2, if the value of "input" is larger than 0.5
   // Use void gather (const float *array, const uint_v &indexes, const float_m &mask)
 
   // begin your code here:
+  float_m mask = tmp > 0.5f;
+  tmp2.gather(input, index, mask);
 
 
   // end of your code
@@ -97,7 +99,8 @@ int main() {
   // Use void scatter (float *array, const uint_v &indexes, const float_m &mask) const
 
   // begin your code here:
-
+  float_m mask2 = tmp > 0.5f;
+  tmp.scatter(output, index, !mask2);
 
   // end of your code
 
