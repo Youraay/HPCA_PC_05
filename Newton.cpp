@@ -70,6 +70,7 @@ float FindRootScalar(const float& p1, const float& p2) {
 
 /*
  * Function to find the root of the function f(x) = p1*x^3 + p2*x^2 + 6*x + 80 using SIMD
+ * g++ Newton.cpp -O3 -fno-tree-vectorize -msse -o Newton.out && ./Newton.out
  */
 stdx::simd<float> FindRootVectorized(const stdx::simd<float>& p1, const stdx::simd<float>& p2) 
 {
