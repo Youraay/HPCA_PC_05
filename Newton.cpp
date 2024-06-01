@@ -26,6 +26,8 @@ float par1[N] __attribute__((aligned(16)));
 float par2[N] __attribute__((aligned(16)));
 float root[N] __attribute__((aligned(16)));
 
+int numIter = 0;
+
 
 /*
  * Function template to calculate f(x) = p1*x^3 + p2*x^2 + 6*x + 80
@@ -71,7 +73,30 @@ float FindRootScalar(const float& p1, const float& p2) {
  */
 stdx::simd<float> FindRootVectorized(const stdx::simd<float>& p1, const stdx::simd<float>& p2) 
 {
-  // TODO: Write the vectorized code to find the root using stdx::simd
+  stdx::simd<float> x = 1, x_new = 0;
+
+  // track which elements reached the required precision with a mask
+  stdx::simd_mask<float> mask = abs((x_new - x) / x_new) > PRECISION;
+
+  while (stdx::any_of(mask)) {
+    x = x_new;
+    x_new = x - F(x, p1, p2) / Fd(x, p1, p2);
+
+    // update mask and continue until all elements reached the required precision
+    mask = abs((x_new - x) / x_new) > PRECISION;
+    numIter++;
+  }
+
+  
+  /* for (; numIter < 1000; ) {
+    x = x_new;
+    x_new = x - F(x, p1, p2) / Fd(x, p1, p2);
+
+    numIter++;
+  } */
+ 
+
+  return x_new;
 }
 
 
@@ -141,7 +166,13 @@ int main() {
   float root2[N];
 
   // Copy input using copy_from
-  // TODO copy the data to par1_v and par2_v 
+  for (int i = 0; i < Nv; ++i)
+  {
+    par1_v[i].copy_from(par1 + i * stdx::simd<float>::size(), stdx::element_aligned);
+
+    par2_v[i].copy_from(par2 + i * stdx::simd<float>::size(), stdx::element_aligned);
+  }
+  
 
   // Compute the roots
   timer.Start();
@@ -151,10 +182,16 @@ int main() {
   timer.Stop();
 
   // Copy output using copy_to
-  // TODO copy the data back to root2
+  for (int i = 0; i < Nv; ++i)
+  {
+    root_v[i].copy_to(root2 + i * stdx::simd<float>::size(), stdx::element_aligned);
+  }
+  
 
 
   std::cout << "SIMD part:" << std::endl;
+
+  std::cout << "Iterations: " << numIter << std::endl;
 
   if (CompareResults(root, root2))
     std::cout << "Results are the same!" << std::endl;
