@@ -89,7 +89,7 @@ stdx::simd<float> FindRootVectorized(const stdx::simd<float>& p1, const stdx::si
   }
 
   
-  /* for (; numIter < 1000; ) {
+  /* for (int i = 0; i < 1000; ++i ) {
     x = x_new;
     x_new = x - F(x, p1, p2) / Fd(x, p1, p2);
 
