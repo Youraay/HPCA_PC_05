@@ -98,8 +98,16 @@ int main()
   /// SIMD calculation using stdx
   TStopwatch timerVc;
 
-  // TODO: Implement the SIMD calculation using stdx
-  
+  for (int ii = 0; ii < NIter; ii++) {
+    for (int i = 0; i < N; i++) {
+      for (int j = 0; j < N; j += stdx::native_simd<float>::size()) {
+        stdx::native_simd<float> aVec(&a[i][j], stdx::element_aligned);
+        stdx::native_simd<float> cVec = f(aVec);
+        cVec.copy_to(&c_simdVc[i][j], stdx::element_aligned);
+      }
+    }
+  }   
+
   timerVc.Stop();
 
   double tScal = timerScalar.RealTime() * 1000;
