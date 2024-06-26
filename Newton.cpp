@@ -91,7 +91,7 @@ stdx::simd<float> FindRootVectorized(const stdx::simd<float>& p1, const stdx::si
   
   /* for (int i = 0; i < 1000; ++i ) {
     x = x_new;
-    x_new = x - F(x, p1, p2) / Fd(x, p1, p2);
+    stdx::where(mask, x_new) =  x - F(x, p1, p2) / Fd(x, p1, p2);
 
     // update mask and continue until all elements reached the required precision
     mask = abs((x_new - x) / x_new) > PRECISION;
